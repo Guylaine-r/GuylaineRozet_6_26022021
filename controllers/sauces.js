@@ -39,7 +39,7 @@ exports.recuperationSauce = (request, response) => {
 };
 
 // Met à jour les informations d'une sauce
-exports.MettreAJourSauce = (request, response) => {
+exports.MettreAJourSauce = async (request, response) => {
   let sauce;
   if (request.body.sauce) {
     sauce = JSON.parse(request.body.sauce);
@@ -49,11 +49,10 @@ exports.MettreAJourSauce = (request, response) => {
 
   if (request.file != undefined) {
     // Pour supprimer ancienne image
-    Sauce.model.findOne({ _id: request.params.id })
-      .then((data) => {
-        const filename = data.imageUrl.split('/images/')[1];
-        fs.unlinkSync("./images/" + filename);
-      })
+    let data = await Sauce.model.findOne({ _id: request.params.id });
+    //recupère les données de l'image avec la fonction split
+    const filename = data.imageUrl.split('/images/')[1];
+    fs.unlinkSync("./images/" + filename);
     sauce.imageUrl = request.protocol + "://" + request.get("host") + "/images/" + request.file.filename;
   };
 
